@@ -7,8 +7,11 @@
 #include "renderer.h"
 #include "snake.h"
 #include "player.h"
+#include <memory>
+#include <thread>
 
-typedef enum gameState {
+typedef enum gameState
+{
     STOPPED = 0,
     RUNNING,
     PAUSED,
@@ -27,20 +30,22 @@ public:
     GameState GetCurrentState();
 
 private:
-    Snake snake;
-    Player player;
-    SDL_Point food;
+    std::shared_ptr<Snake> snake;
+    std::shared_ptr<Player> player;
+    std::vector<SDL_Point> food;
 
     std::random_device dev;
     std::mt19937 engine;
     std::uniform_int_distribution<int> random_w;
     std::uniform_int_distribution<int> random_h;
+    std::thread foodSpawn;
 
     int score{0};
     GameState state_{RUNNING};
 
     void PlaceFood();
     void Update();
+    bool AteFood(int newHeadX, int newHeadY);
 };
 
 #endif
