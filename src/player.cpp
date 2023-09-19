@@ -13,7 +13,8 @@ void Player::SetScore(int point)
     score = point;
 }
 
-int Player::GetScore() {
+int Player::GetScore() const
+{
     return score;
 }
 

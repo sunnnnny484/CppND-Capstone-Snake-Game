@@ -49,7 +49,7 @@ private:
 
     void PlaceFood();
     void Update();
-    bool AteFood();
+    bool EatFood();
 };
 
 #endif

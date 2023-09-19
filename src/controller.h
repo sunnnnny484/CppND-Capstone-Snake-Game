@@ -8,7 +8,7 @@ class Game;
 class Controller
 {
 public:
-    void HandleInput(Game &game, Snake &snake) const;
+    void HandleInput(Game &game, std::vector<Snake> &snake) const;
 
 private:
     void ChangeDirection(Snake &snake, Snake::Direction input,

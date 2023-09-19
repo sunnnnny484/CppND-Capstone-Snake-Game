@@ -19,12 +19,12 @@ public:
         : id(id),
           grid_width(grid_width),
           grid_height(grid_height)
-          {
-              head_x = grid_width / 2 - 2 + id * 4;
-              head_y = grid_height / 2;
-          }
+    {
+        head_x = grid_width / 2 - 2 + id * 4;
+        head_y = grid_height / 2;
+    }
 
-    void Update();
+    void Update(Snake const &other);
 
     void GrowBody();
     bool SnakeCell(int x, int y);
@@ -40,8 +40,9 @@ public:
     std::vector<SDL_Point> body;
 
 private:
-    void UpdateHead();
+    void UpdateHead(Snake const &other);
     void UpdateBody(SDL_Point &current_cell, SDL_Point &prev_cell);
+    bool BiteOtherSnake(Snake otherSnake);
 
     bool growing{false};
     int grid_width{0};

@@ -11,7 +11,7 @@ class Player
 public:
     Player(int id);
     void SetScore(int point);
-    int GetScore();
+    int GetScore() const;
     void SaveToScoreBoard();
 
 private:

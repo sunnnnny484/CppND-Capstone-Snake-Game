@@ -36,8 +36,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
         frame_start = SDL_GetTicks();
 
         // Input, Update, Render - the main game loop.
-        controller.HandleInput(*this, snakeList[PLAYER_1]);
-        controller.HandleInput(*this, snakeList[PLAYER_2]);
+        controller.HandleInput(*this, snakeList);
 
         // Display the pause menu
         if (state_ == PAUSED)
@@ -107,18 +106,11 @@ void Game::Update()
     if (!snakeList[0].alive && !snakeList[1].alive)
         return;
 
-    snakeList[0].Update();
-    snakeList[1].Update();
+    snakeList[0].Update(snakeList[1]);
+    snakeList[1].Update(snakeList[0]);
 
     // Check if there's food over here
-    if (AteFood())
-    {
-        // Grow snake and increase speed.
-        snakeList[PLAYER_1].GrowBody();
-        snakeList[PLAYER_2].GrowBody();
-        snakeList[PLAYER_1].speed += 0.02;
-        snakeList[PLAYER_2].speed += 0.02;
-    }
+    EatFood();
 }
 
 Game::~Game()
@@ -128,7 +120,7 @@ Game::~Game()
     foodSpawn.join();
 }
 
-int Game::GetScore(int playerID) const { return 10; }
+int Game::GetScore(int playerID) const { return playerList[playerID].GetScore(); }
 int Game::GetSize(int playerID) const { return snakeList[playerID].size; }
 
 void Game::SetGameState(GameState newState)
@@ -141,7 +133,7 @@ GameState Game::GetCurrentState()
     return state_;
 }
 
-bool Game::AteFood()
+bool Game::EatFood()
 {
     for (auto iter = food.begin(); iter < food.end(); iter++)
     {
@@ -149,14 +141,18 @@ bool Game::AteFood()
         if ((*iter).x == static_cast<int>(snakeList[0].head_x) &&
             (*iter).y == static_cast<int>(snakeList[0].head_y))
         {
+            snakeList[PLAYER_1].GrowBody();
+            snakeList[PLAYER_1].speed += 0.02;
             food.erase(iter);
             playerList[0].SetScore(playerList[0].GetScore() + 1);
             return true;
         }
         /* Player 2 gets the food */
         else if ((*iter).x == static_cast<int>(snakeList[1].head_x) &&
-                 (*iter).y == static_cast<int>(snakeList[0].head_y))
+                 (*iter).y == static_cast<int>(snakeList[1].head_y))
         {
+            snakeList[PLAYER_2].GrowBody();
+            snakeList[PLAYER_2].speed += 0.02;
             food.erase(iter);
             playerList[1].SetScore(playerList[1].GetScore() + 1);
             return true;

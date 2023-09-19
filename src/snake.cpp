@@ -2,13 +2,13 @@
 #include <cmath>
 #include <iostream>
 
-void Snake::Update()
+void Snake::Update(Snake const &other)
 {
     SDL_Point prev_cell{
         static_cast<int>(head_x),
         static_cast<int>(
             head_y)}; // We first capture the head's cell before updating.
-    UpdateHead();
+    UpdateHead(other);
     SDL_Point current_cell{
         static_cast<int>(head_x),
         static_cast<int>(head_y)}; // Capture the head's cell after updating.
@@ -21,7 +21,7 @@ void Snake::Update()
     }
 }
 
-void Snake::UpdateHead()
+void Snake::UpdateHead(Snake const &other)
 {
     switch (direction)
     {
@@ -45,6 +45,10 @@ void Snake::UpdateHead()
     // Wrap the Snake around to the beginning if going off of the screen.
     head_x = fmod(head_x + grid_width, grid_width);
     head_y = fmod(head_y + grid_height, grid_height);
+    if (BiteOtherSnake(other))
+    {
+        alive = false;
+    }
 }
 
 void Snake::UpdateBody(SDL_Point &current_head_cell, SDL_Point &prev_head_cell)
@@ -90,4 +94,12 @@ bool Snake::SnakeCell(int x, int y)
         }
     }
     return false;
+}
+
+bool Snake::BiteOtherSnake(Snake otherSnake)
+{
+    int thisHead_x = static_cast<int>(head_x);
+    int thisHead_y = static_cast<int>(head_y);
+
+    return otherSnake.SnakeCell(thisHead_x, thisHead_y);
 }
