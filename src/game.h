@@ -10,6 +10,9 @@
 #include <memory>
 #include <thread>
 
+#define PLAYER_1 0
+#define PLAYER_2 1
+
 typedef enum gameState
 {
     STOPPED = 0,
@@ -24,14 +27,16 @@ public:
     ~Game();
     void Run(Controller const &controller, Renderer &renderer,
              std::size_t target_frame_duration);
-    int GetScore() const;
-    int GetSize() const;
+    int GetScore(int playerID) const;
+    int GetSize(int playerID) const;
     void SetGameState(GameState newState);
     GameState GetCurrentState();
 
 private:
     std::shared_ptr<Snake> snake;
+    std::vector<Snake> snakeList;
     std::shared_ptr<Player> player;
+    std::vector<Player> playerList;
     std::vector<SDL_Point> food;
 
     std::random_device dev;
@@ -40,12 +45,11 @@ private:
     std::uniform_int_distribution<int> random_h;
     std::thread foodSpawn;
 
-    int score{0};
     GameState state_{RUNNING};
 
     void PlaceFood();
     void Update();
-    bool AteFood(int newHeadX, int newHeadY);
+    bool AteFood();
 };
 
 #endif

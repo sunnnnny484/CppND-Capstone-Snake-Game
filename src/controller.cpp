@@ -21,7 +21,7 @@ void Controller::HandleInput(Game &game, Snake &snake) const
         {
             game.SetGameState(STOPPED);
         }
-        else if (e.type == SDL_KEYDOWN)
+        else if (e.type == SDL_KEYDOWN && snake.id == PLAYER_1)
         {
             switch (e.key.keysym.sym)
             {
@@ -41,6 +41,50 @@ void Controller::HandleInput(Game &game, Snake &snake) const
                 break;
 
             case SDLK_RIGHT:
+                ChangeDirection(snake, Snake::Direction::kRight,
+                                Snake::Direction::kLeft);
+                break;
+
+            case SDLK_ESCAPE:
+                game.SetGameState(PAUSED);
+                break;
+
+            case SDLK_1:
+                if (PAUSED == game.GetCurrentState())
+                {
+                    game.SetGameState(RUNNING);
+                }
+                break;
+
+            case SDLK_2:
+                if (PAUSED == game.GetCurrentState())
+                {
+                    game.SetGameState(STOPPED);
+                }
+                break;
+            }
+        }
+        else if (e.type == SDL_KEYDOWN && snake.id == PLAYER_2)
+        {
+            std::cout << "1\n";
+            switch (e.key.keysym.sym)
+            {
+            case SDLK_w:
+                ChangeDirection(snake, Snake::Direction::kUp,
+                                Snake::Direction::kDown);
+                break;
+
+            case SDLK_s:
+                ChangeDirection(snake, Snake::Direction::kDown,
+                                Snake::Direction::kUp);
+                break;
+
+            case SDLK_a:
+                ChangeDirection(snake, Snake::Direction::kLeft,
+                                Snake::Direction::kRight);
+                break;
+
+            case SDLK_d:
                 ChangeDirection(snake, Snake::Direction::kRight,
                                 Snake::Direction::kLeft);
                 break;

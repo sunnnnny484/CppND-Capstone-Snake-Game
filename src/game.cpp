@@ -10,8 +10,15 @@ Game::Game(std::size_t grid_width, std::size_t grid_height)
       random_w(0, static_cast<int>(grid_width - 1)),
       random_h(0, static_cast<int>(grid_height - 1))
 {
-    snake = std::make_shared<Snake>(grid_width, grid_height);
-    player = std::make_shared<Player>();
+    Snake snake = Snake(grid_width, grid_height, PLAYER_1);
+    snakeList.emplace_back(snake);
+    snake = Snake(grid_width, grid_height, PLAYER_2);
+    snakeList.emplace_back(snake);
+
+    Player player = Player(PLAYER_1);
+    playerList.emplace_back(player);
+    player = Player(PLAYER_2);
+    playerList.emplace_back(player);
     foodSpawn = std::thread(&Game::PlaceFood, this);
 }
 
@@ -29,7 +36,8 @@ void Game::Run(Controller const &controller, Renderer &renderer,
         frame_start = SDL_GetTicks();
 
         // Input, Update, Render - the main game loop.
-        controller.HandleInput(*this, *snake);
+        controller.HandleInput(*this, snakeList[PLAYER_1]);
+        controller.HandleInput(*this, snakeList[PLAYER_2]);
 
         // Display the pause menu
         if (state_ == PAUSED)
@@ -39,7 +47,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
         }
 
         Update();
-        renderer.Render(*snake, food);
+        renderer.Render(snakeList, food);
 
         frame_end = SDL_GetTicks();
 
@@ -51,7 +59,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
         // After every second, update the window title.
         if (frame_end - title_timestamp >= 1000)
         {
-            renderer.UpdateWindowTitle(score, frame_count);
+            renderer.UpdateWindowTitle(frame_count);
             frame_count = 0;
             title_timestamp = frame_end;
         }
@@ -80,7 +88,7 @@ void Game::PlaceFood()
             y = random_h(engine);
             // Check that the location is not occupied by a snake item before placing
             // food.
-            if (!snake->SnakeCell(x, y))
+            if (!snakeList[0].SnakeCell(x, y) && !snakeList[1].SnakeCell(x, y))
             {
                 newFood.x = x;
                 newFood.y = y;
@@ -96,34 +104,32 @@ void Game::PlaceFood()
 
 void Game::Update()
 {
-    if (!snake->alive)
+    if (!snakeList[0].alive && !snakeList[1].alive)
         return;
 
-    snake->Update();
-
-    int new_x = static_cast<int>(snake->head_x);
-    int new_y = static_cast<int>(snake->head_y);
+    snakeList[0].Update();
+    snakeList[1].Update();
 
     // Check if there's food over here
-    if (AteFood(new_x, new_y))
+    if (AteFood())
     {
-        score++;
-        // PlaceFood();
         // Grow snake and increase speed.
-        snake->GrowBody();
-        snake->speed += 0.02;
+        snakeList[PLAYER_1].GrowBody();
+        snakeList[PLAYER_2].GrowBody();
+        snakeList[PLAYER_1].speed += 0.02;
+        snakeList[PLAYER_2].speed += 0.02;
     }
 }
 
 Game::~Game()
 {
-    player->SetScore(score);
-    player->SaveToScoreBoard();
+    playerList[0].SaveToScoreBoard();
+    playerList[1].SaveToScoreBoard();
     foodSpawn.join();
 }
 
-int Game::GetScore() const { return score; }
-int Game::GetSize() const { return snake->size; }
+int Game::GetScore(int playerID) const { return 10; }
+int Game::GetSize(int playerID) const { return snakeList[playerID].size; }
 
 void Game::SetGameState(GameState newState)
 {
@@ -135,13 +141,24 @@ GameState Game::GetCurrentState()
     return state_;
 }
 
-bool Game::AteFood(int newHeadX, int newHeadY)
+bool Game::AteFood()
 {
     for (auto iter = food.begin(); iter < food.end(); iter++)
     {
-        if ((*iter).x == newHeadX && (*iter).y == newHeadY)
+        /* Player 1 gets the food */
+        if ((*iter).x == static_cast<int>(snakeList[0].head_x) &&
+            (*iter).y == static_cast<int>(snakeList[0].head_y))
         {
             food.erase(iter);
+            playerList[0].SetScore(playerList[0].GetScore() + 1);
+            return true;
+        }
+        /* Player 2 gets the food */
+        else if ((*iter).x == static_cast<int>(snakeList[1].head_x) &&
+                 (*iter).y == static_cast<int>(snakeList[0].head_y))
+        {
+            food.erase(iter);
+            playerList[1].SetScore(playerList[1].GetScore() + 1);
             return true;
         }
     }

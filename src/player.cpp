@@ -1,9 +1,9 @@
 #include "player.h"
 #include <fstream>
 
-Player::Player()
+Player::Player(int id) : id(id)
 {
-    std::cout << "Enter the player name within 20 characters:\n";
+    std::cout << "Enter the player " << id << " name within 20 characters:\n";
     std::cin >> name;
     name = name.substr(0, MAX_NAME_LEN);
 }
@@ -11,6 +11,10 @@ Player::Player()
 void Player::SetScore(int point)
 {
     score = point;
+}
+
+int Player::GetScore() {
+    return score;
 }
 
 void Player::SaveToScoreBoard()

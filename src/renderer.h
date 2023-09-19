@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "snake.h"
+#include <memory>
 
 class Renderer
 {
@@ -13,8 +14,8 @@ public:
              const std::size_t grid_width, const std::size_t grid_height);
     ~Renderer();
 
-    void Render(Snake const snake, std::vector<SDL_Point> const &food);
-    void UpdateWindowTitle(int score, int fps);
+    void Render(std::vector<Snake> const snakeList, std::vector<SDL_Point> const &food);
+    void UpdateWindowTitle(int fps);
     void UpdatePauseMenu();
 
 private:

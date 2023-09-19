@@ -9,12 +9,15 @@
 class Player
 {
 public:
-    Player();
+    Player(int id);
     void SetScore(int point);
+    int GetScore();
     void SaveToScoreBoard();
+
 private:
     std::string name{MAX_NAME_LEN, '\0'};
     int score{0};
+    int id{0};
 };
 
 #endif /* PLAYER_H */
