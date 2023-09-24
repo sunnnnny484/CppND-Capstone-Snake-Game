@@ -17,11 +17,13 @@ In this project, you can build your own C++ application or extend this Snake gam
   * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
 * SDL2 >= 2.0
   * All installation instructions can be found [here](https://wiki.libsdl.org/Installation)
-  >Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source. 
+  >Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source.
 * gcc/g++ >= 5.4
   * Linux: gcc / g++ is installed by default on most Linux distros
   * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
   * Windows: recommend using [MinGW](http://www.mingw.org/)
+* Install SDL_Image library
+  * sudo apt install libsdl2-image-dev
 
 ## Basic Build Instructions
 
@@ -33,6 +35,8 @@ In this project, you can build your own C++ application or extend this Snake gam
 ## New features
 * Enter player's name at the beginning and stored player's data, including name and score, in the file scoreboard.txt
 * Pause game when pressing ESC button, after that select 1 of 2 options: resume or exit
+* Play snake game with 2 player, game will end when a snake bite the other
+* Spawning multiple foods using a child thread
 
 ## Satified Requirements
 1. Loop, Functions, I/O
